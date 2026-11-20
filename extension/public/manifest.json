@@ -1,0 +1,28 @@
+
+{
+  "manifest_version": 3,
+  "name": "WebMind AI",
+  "version": "1.0.0",
+  "description": "Context-aware AI browser assistant with RAG and Gemini",
+
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "webNavigation"
+  ],
+
+  "host_permissions": [
+    "http://127.0.0.1:8000/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_title": "Open WebMind AI"
+  }
+}

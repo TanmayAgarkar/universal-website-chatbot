@@ -1,0 +1,2326 @@
+
+/* =========================================================
+   WebMind AI - Complete Chatbot Stylesheet
+   Modules 3 through 11
+
+   Features:
+   - Floating chatbot
+   - Responsive layout
+   - Page-specific chat
+   - Webpage extraction status
+   - Backend connection status
+   - RAG indexing status
+   - Gemini source references
+   - Navigation notifications
+   - Persistent conversation status
+   - Multi-page knowledge base
+   - Compact collection management
+   - Collapsible webpages and sources
+   - Improved chat and input layout
+   ========================================================= */
+
+
+/* =========================================================
+   1. Global and Shadow DOM Styles
+   ========================================================= */
+
+:host {
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   2. Main Floating Chatbot
+   ========================================================= */
+
+.webmind-chatbot {
+  position: fixed;
+  right: 20px;
+  bottom: 16px;
+
+  width: 430px;
+  height: min(750px, calc(100vh - 32px));
+
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #ffffff;
+  color: #1e293b;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+
+  box-shadow:
+    0 12px 45px rgba(15, 23, 42, 0.22);
+
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+
+  pointer-events: auto;
+}
+
+.webmind-chatbot button,
+.webmind-chatbot textarea,
+.webmind-chatbot input,
+.webmind-chatbot select {
+  font-family: inherit;
+}
+
+.webmind-chatbot button {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+
+/* =========================================================
+   3. Chatbot Header
+   ========================================================= */
+
+.webmind-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+  padding: 11px 14px;
+
+  background: #172554;
+  color: #ffffff;
+
+  flex-shrink: 0;
+}
+
+.webmind-header-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  min-width: 0;
+}
+
+.webmind-logo {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  border-radius: 11px;
+}
+
+.webmind-header-details {
+  min-width: 0;
+}
+
+.webmind-header-details h3 {
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+
+  color: #ffffff;
+}
+
+.webmind-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 3px;
+
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.webmind-status-dot {
+  width: 7px;
+  height: 7px;
+
+  background: #22c55e;
+
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.webmind-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  flex-shrink: 0;
+}
+
+.webmind-header-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #ffffff;
+}
+
+.webmind-header-actions button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+
+/* =========================================================
+   4. Current Website Information
+   ========================================================= */
+
+.webmind-website-info {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 9px 14px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  border-bottom: 1px solid #dbeafe;
+
+  flex-shrink: 0;
+}
+
+.webmind-website-info > svg {
+  flex-shrink: 0;
+}
+
+.webmind-website-info > div {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.webmind-website-info strong {
+  display: block;
+
+  max-width: 100%;
+
+  color: #1e293b;
+  font-size: 12px;
+  font-weight: 700;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.webmind-website-info span {
+  color: #64748b;
+  font-size: 11px;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   5. Single-Page Chat Messages
+   ========================================================= */
+
+.webmind-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  flex: 1 1 0;
+  min-height: 0;
+
+  padding: 14px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: #f8fafc;
+
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.webmind-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  flex-shrink: 0;
+}
+
+.webmind-message.user {
+  justify-content: flex-end;
+}
+
+.webmind-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+
+  border-radius: 50%;
+}
+
+.webmind-message-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  max-width: 90%;
+  min-width: 0;
+
+  padding: 10px 12px;
+
+  background: #ffffff;
+  color: #334155;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06);
+
+  overflow-wrap: anywhere;
+}
+
+.webmind-message.user .webmind-message-bubble {
+  background: #2563eb;
+  color: #ffffff;
+
+  border-bottom-right-radius: 4px;
+}
+
+.webmind-message-content {
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.webmind-message-time {
+  color: #94a3b8;
+  font-size: 10px;
+
+  text-align: right;
+}
+
+.webmind-message.user .webmind-message-time {
+  color: #dbeafe;
+}
+
+
+/* =========================================================
+   6. Typing Indicator
+   ========================================================= */
+
+.webmind-typing-container {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  padding: 10px 14px;
+
+  background: #ffffff;
+  border-radius: 12px;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.webmind-typing-label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.webmind-typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.webmind-typing-dots span {
+  width: 7px;
+  height: 7px;
+
+  background: #64748b;
+  border-radius: 50%;
+
+  animation: webmind-bounce 1.2s infinite;
+}
+
+.webmind-typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.webmind-typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes webmind-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   7. Error Display
+   ========================================================= */
+
+.webmind-error {
+  margin: 5px 12px;
+  padding: 8px 10px;
+
+  flex-shrink: 0;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   8. Single-Page Action Buttons
+   ========================================================= */
+
+.webmind-suggestions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 5px;
+  padding: 8px 12px;
+
+  max-height: 100px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+
+  flex-shrink: 0;
+}
+
+.webmind-suggestions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  padding: 6px 8px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 7px;
+
+  background: #eff6ff;
+  color: #1d4ed8;
+
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.webmind-suggestions button:hover {
+  background: #dbeafe;
+}
+
+.webmind-suggestions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   9. Single-Page Chat Composer
+   ========================================================= */
+
+.webmind-input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+
+  padding: 8px 12px;
+
+  background: #ffffff;
+
+  flex-shrink: 0;
+}
+
+.webmind-input-area textarea {
+  flex: 1;
+  min-width: 0;
+
+  min-height: 45px;
+  max-height: 110px;
+
+  padding: 10px;
+
+  resize: none;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.webmind-input-area textarea:focus {
+  border-color: #2563eb;
+}
+
+.webmind-input-area button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.webmind-input-area button:hover {
+  background: #1d4ed8;
+}
+
+
+/* =========================================================
+   10. Footer
+   ========================================================= */
+
+.webmind-footer {
+  padding: 5px 8px;
+
+  color: #94a3b8;
+
+  border-top: 1px solid #f1f5f9;
+
+  text-align: center;
+  font-size: 9px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   11. Minimized Floating Button
+   ========================================================= */
+
+.webmind-floating-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 60px;
+  height: 60px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25);
+
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.webmind-floating-button:hover {
+  background: #1d4ed8;
+}
+
+
+/* =========================================================
+   12. Module 4 - Webpage Analysis
+   ========================================================= */
+
+.webmind-analysis-status {
+  padding: 7px 12px;
+
+  background: #f0fdf4;
+
+  border-top: 1px solid #bbf7d0;
+
+  flex-shrink: 0;
+}
+
+.webmind-analysis-title {
+  margin-bottom: 4px;
+
+  color: #166534;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.webmind-analysis-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 5px;
+}
+
+.webmind-analysis-stats span {
+  padding: 3px 6px;
+
+  background: #dcfce7;
+  color: #166534;
+
+  border-radius: 5px;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   13. Module 5 - Backend Status
+   ========================================================= */
+
+.webmind-backend-status {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 4px 10px;
+  padding: 7px 12px;
+
+  background: #eff6ff;
+  color: #1d4ed8;
+
+  border-top: 1px solid #bfdbfe;
+
+  font-size: 10px;
+
+  flex-shrink: 0;
+}
+
+.webmind-backend-status strong {
+  color: #1e40af;
+  font-size: 11px;
+}
+
+.webmind-backend-status span {
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   14. Module 6 - RAG Status
+   ========================================================= */
+
+.webmind-rag-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 12px;
+
+  background: #f5f3ff;
+  color: #6d28d9;
+
+  border-top: 1px solid #ddd6fe;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  flex-shrink: 0;
+}
+
+.webmind-rag-status svg {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   15. Module 7 - Gemini Answer Sources
+   ========================================================= */
+
+.webmind-sources {
+  padding: 8px 12px;
+
+  max-height: 125px;
+
+  overflow-y: auto;
+
+  background: #f8fafc;
+
+  border-top: 1px solid #e2e8f0;
+
+  flex-shrink: 0;
+}
+
+.webmind-sources-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-bottom: 6px;
+
+  color: #334155;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.webmind-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  max-height: 105px;
+
+  overflow-y: auto;
+}
+
+.webmind-source-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  padding: 7px 9px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+
+  color: #64748b;
+  font-size: 10px;
+}
+
+.webmind-source-item strong {
+  color: #1d4ed8;
+  font-size: 11px;
+}
+
+.webmind-source-item span {
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   16. Module 8 - Navigation Notice
+   ========================================================= */
+
+.webmind-navigation-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  padding: 9px 12px;
+
+  background: #fffbeb;
+  color: #92400e;
+
+  border-bottom: 1px solid #fde68a;
+
+  flex-shrink: 0;
+}
+
+.webmind-navigation-notice > svg {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.webmind-navigation-notice > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  min-width: 0;
+}
+
+.webmind-navigation-notice strong {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.webmind-navigation-notice span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 11px;
+}
+
+.webmind-navigation-notice small {
+  color: #a16207;
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   17. Modules 9 and 10 - Conversation History
+   ========================================================= */
+
+.webmind-history-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 7px 12px;
+
+  background: #f0f9ff;
+  color: #0369a1;
+
+  border-top: 1px solid #bae6fd;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  flex-shrink: 0;
+}
+
+.webmind-history-status svg {
+  flex-shrink: 0;
+}
+
+.webmind-history-status span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   18. Module 11 - Page Chat / KB Toggle
+   ========================================================= */
+
+.webmind-kb-toggle {
+  padding: 8px 12px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-toggle button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: 100%;
+  min-height: 36px;
+
+  padding: 8px 12px;
+
+  background: #eff6ff;
+  color: #1d4ed8;
+
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.webmind-kb-toggle button:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.webmind-kb-toggle svg {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   19. Module 11 - KB Main Panel
+   ========================================================= */
+
+.webmind-kb-panel {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  background: #ffffff;
+  color: #1e293b;
+
+  font-family: inherit;
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   20. KB Compact Header
+   ========================================================= */
+
+.webmind-kb-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+  padding: 10px 14px 7px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-top-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+
+  color: #172554;
+  font-size: 13px;
+}
+
+.webmind-kb-top-title svg {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.webmind-kb-top-title strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.webmind-kb-count {
+  padding: 4px 9px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   21. KB Collection Selector
+   ========================================================= */
+
+.webmind-kb-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 4px 14px 10px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-selector select {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+
+  height: 37px;
+
+  padding: 0 10px;
+
+  background: #f8fafc;
+  color: #1e293b;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 9px;
+
+  font-size: 12px;
+  outline: none;
+}
+
+.webmind-kb-selector select:focus {
+  border-color: #2563eb;
+}
+
+.webmind-kb-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 35px;
+  height: 35px;
+
+  padding: 0;
+
+  flex-shrink: 0;
+
+  background: #ffffff;
+  color: #475569;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+}
+
+.webmind-kb-icon-btn:hover {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+.webmind-kb-icon-btn.danger:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+
+/* =========================================================
+   22. KB Create Collection
+   ========================================================= */
+
+.webmind-kb-create {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 0 14px 10px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-create input {
+  flex: 1;
+  min-width: 0;
+
+  height: 35px;
+
+  padding: 0 10px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+
+  font-size: 12px;
+  outline: none;
+}
+
+.webmind-kb-create input:focus {
+  border-color: #2563eb;
+}
+
+.webmind-kb-create button {
+  height: 35px;
+
+  padding: 0 14px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.webmind-kb-create button:hover {
+  background: #1d4ed8;
+}
+
+
+/* =========================================================
+   23. KB Saved Pages Toolbar
+   ========================================================= */
+
+.webmind-kb-page-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 14px;
+
+  background: #ffffff;
+
+  border-top: 1px solid #eef2f7;
+  border-bottom: 1px solid #eef2f7;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-page-expand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  flex: 1;
+  min-width: 0;
+
+  padding: 5px 0;
+
+  background: transparent;
+  color: #334155;
+
+  border: none;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.webmind-kb-page-expand span {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.webmind-kb-page-expand svg {
+  flex-shrink: 0;
+}
+
+.webmind-kb-page-toolbar .webmind-kb-icon-btn {
+  width: 29px;
+  height: 29px;
+
+  border-radius: 7px;
+}
+
+
+/* =========================================================
+   24. KB Collapsible Saved Page List
+   ========================================================= */
+
+.webmind-kb-page-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  padding: 8px 14px;
+
+  max-height: 125px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: #fafcff;
+
+  border-bottom: 1px solid #eef2f7;
+
+  flex-shrink: 0;
+
+  scrollbar-width: thin;
+}
+
+.webmind-kb-page-list p {
+  margin: 4px 0;
+
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.webmind-kb-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 34px;
+
+  padding: 6px 8px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  border-radius: 7px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-page > svg {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.webmind-kb-page span {
+  flex: 1;
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 11px;
+}
+
+.webmind-kb-page button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 25px;
+  height: 25px;
+
+  padding: 0;
+
+  background: transparent;
+  color: #64748b;
+
+  border: none;
+  border-radius: 6px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-page button:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+
+/* =========================================================
+   25. KB Conversation Area
+   ========================================================= */
+
+.webmind-kb-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+
+  padding: 14px 12px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: #f8fafc;
+
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.webmind-kb-messages > * {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   26. KB Empty Conversation State
+   ========================================================= */
+
+.webmind-kb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 150px;
+
+  padding: 20px 15px;
+
+  color: #64748b;
+
+  text-align: center;
+}
+
+.webmind-kb-empty > svg {
+  color: #2563eb;
+}
+
+.webmind-kb-empty strong {
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.webmind-kb-empty p {
+  margin: 0;
+
+  max-width: 260px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   27. KB Chat Message Layout
+   ========================================================= */
+
+.webmind-kb-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+
+  width: 100%;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-user {
+  justify-content: flex-end;
+}
+
+.webmind-kb-assistant {
+  justify-content: flex-start;
+}
+
+.webmind-kb-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 27px;
+  height: 27px;
+
+  flex-shrink: 0;
+
+  background: #eaf1ff;
+  color: #2563eb;
+
+  border-radius: 50%;
+}
+
+.webmind-kb-bubble {
+  min-width: 0;
+  max-width: 88%;
+
+  padding: 10px 12px;
+
+  background: #ffffff;
+  color: #334155;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04);
+
+  overflow-wrap: anywhere;
+}
+
+.webmind-kb-user .webmind-kb-bubble {
+  background: #2563eb;
+  color: #ffffff;
+
+  border-color: #2563eb;
+  border-bottom-right-radius: 4px;
+}
+
+.webmind-kb-assistant .webmind-kb-bubble {
+  background: #ffffff;
+  color: #334155;
+
+  border-bottom-left-radius: 4px;
+}
+
+.webmind-kb-bubble > strong {
+  display: block;
+  margin-bottom: 5px;
+
+  color: #1d4ed8;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.webmind-kb-content {
+  font-size: 12px;
+  line-height: 1.65;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.webmind-kb-inline-sources {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-top: 9px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   28. KB Processing Indicator
+   ========================================================= */
+
+.webmind-kb-thinking {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  align-self: flex-start;
+
+  padding: 8px 11px;
+
+  background: #eff6ff;
+  color: #475569;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+}
+
+.webmind-kb-thinking svg {
+  color: #2563eb;
+
+  animation: webmind-kb-spin 1s linear infinite;
+}
+
+@keyframes webmind-kb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   29. KB Collapsible Sources
+   ========================================================= */
+
+.webmind-kb-sources-wrap {
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border-top: 1px solid #eef2f7;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-sources-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+  min-height: 38px;
+
+  padding: 9px 14px;
+
+  background: #ffffff;
+  color: #334155;
+
+  border: none;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-align: left;
+}
+
+.webmind-kb-sources-toggle > span:first-of-type {
+  flex: 1;
+}
+
+.webmind-kb-sources-toggle svg {
+  flex-shrink: 0;
+}
+
+.webmind-kb-source-count {
+  padding: 3px 8px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+}
+
+.webmind-kb-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  max-height: 135px;
+
+  padding: 0 12px 10px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+}
+
+.webmind-kb-source {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding: 9px 10px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.webmind-kb-source strong {
+  color: #1e293b;
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.webmind-kb-source span {
+  color: #64748b;
+
+  font-size: 10px;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
+}
+
+.webmind-kb-source a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  align-self: flex-start;
+
+  color: #2563eb;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.webmind-kb-source a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   30. KB Chat Composer
+   ========================================================= */
+
+.webmind-kb-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+
+  padding: 10px 12px;
+
+  background: #ffffff;
+
+  border-top: 1px solid #eef2f7;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-composer textarea {
+  flex: 1;
+  min-width: 0;
+
+  min-height: 42px;
+  max-height: 105px;
+
+  padding: 10px 11px;
+
+  resize: vertical;
+
+  background: #f8fafc;
+  color: #1e293b;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+
+  outline: none;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.webmind-kb-composer textarea:focus {
+  background: #ffffff;
+  border-color: #2563eb;
+}
+
+.webmind-kb-composer textarea::placeholder {
+  color: #94a3b8;
+}
+
+.webmind-kb-composer button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  padding: 0;
+
+  flex-shrink: 0;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 10px;
+}
+
+.webmind-kb-composer button:hover {
+  background: #1d4ed8;
+}
+
+.webmind-kb-composer button:disabled {
+  background: #93c5fd;
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   31. KB Notices and Errors
+   ========================================================= */
+
+.webmind-kb-notice {
+  padding: 7px 12px;
+
+  background: #f0fdf4;
+  color: #166534;
+
+  border-top: 1px solid #dcfce7;
+
+  font-size: 11px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-error {
+  padding: 8px 12px;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  border-top: 1px solid #fecaca;
+
+  font-size: 11px;
+
+  overflow-wrap: anywhere;
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   32. Compatibility With Previous KB JSX
+   ========================================================= */
+
+/*
+   These selectors preserve basic styling if
+   your previous KnowledgeBasePanel.jsx is
+   still present during migration.
+
+   The new .webmind-kb-top, .webmind-kb-selector,
+   .webmind-kb-page-toolbar and
+   .webmind-kb-composer layout is preferred.
+*/
+
+.webmind-kb-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 12px 4px;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.webmind-kb-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 5px 12px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-row input,
+.webmind-kb-panel > select {
+  flex: 1;
+  min-width: 0;
+
+  padding: 9px 10px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+
+  font-size: 12px;
+}
+
+.webmind-kb-panel > select {
+  flex: 0 0 auto;
+  width: calc(100% - 24px);
+  margin: 5px 12px;
+}
+
+.webmind-kb-row button,
+.webmind-kb-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  padding: 8px;
+
+  background: #ffffff;
+  color: #334155;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.webmind-kb-row button:hover,
+.webmind-kb-actions button:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.webmind-kb-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  padding: 5px 12px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  margin: 5px 12px;
+  padding: 9px;
+
+  max-height: 125px;
+
+  overflow-y: auto;
+
+  background: #fafcff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+
+  flex-shrink: 0;
+}
+
+.webmind-kb-loading {
+  padding: 8px 12px;
+
+  color: #64748b;
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   33. Keep KB Panel Inside Chat Window
+   ========================================================= */
+
+.webmind-chatbot > .webmind-kb-panel {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+/*
+   Support a persistent wrapper around the
+   knowledge base panel when switching modes.
+*/
+
+.webmind-chatbot > div[style*="display: contents"] {
+  display: contents;
+}
+
+.webmind-kb-panel,
+.webmind-kb-messages,
+.webmind-kb-page-list,
+.webmind-kb-sources {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+
+/* =========================================================
+   34. Scrollbar Styling
+   ========================================================= */
+
+.webmind-messages::-webkit-scrollbar,
+.webmind-kb-messages::-webkit-scrollbar,
+.webmind-kb-page-list::-webkit-scrollbar,
+.webmind-kb-sources::-webkit-scrollbar,
+.webmind-suggestions::-webkit-scrollbar {
+  width: 5px;
+}
+
+.webmind-messages::-webkit-scrollbar-thumb,
+.webmind-kb-messages::-webkit-scrollbar-thumb,
+.webmind-kb-page-list::-webkit-scrollbar-thumb,
+.webmind-kb-sources::-webkit-scrollbar-thumb,
+.webmind-suggestions::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.webmind-messages::-webkit-scrollbar-track,
+.webmind-kb-messages::-webkit-scrollbar-track,
+.webmind-kb-page-list::-webkit-scrollbar-track,
+.webmind-kb-sources::-webkit-scrollbar-track,
+.webmind-suggestions::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+/* =========================================================
+   35. Responsive Layout
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .webmind-chatbot {
+    right: 8px;
+    bottom: 8px;
+
+    width: calc(100vw - 16px);
+    height: min(750px, calc(100vh - 16px));
+
+    max-width: none;
+  }
+
+  .webmind-suggestions {
+    gap: 4px;
+    padding: 7px 10px;
+  }
+
+  .webmind-suggestions button {
+    padding: 6px 7px;
+    font-size: 10px;
+  }
+
+  .webmind-kb-top,
+  .webmind-kb-selector,
+  .webmind-kb-page-toolbar {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .webmind-kb-bubble {
+    max-width: 94%;
+  }
+
+  .webmind-kb-messages {
+    padding: 10px;
+  }
+
+  .webmind-kb-composer {
+    padding: 8px 10px;
+  }
+
+  .webmind-kb-source {
+    padding: 8px;
+  }
+
+}
+
+
+/* =========================================================
+   36. Short Screen Height
+   ========================================================= */
+
+@media (max-height: 600px) {
+
+  .webmind-chatbot {
+    height: calc(100vh - 16px);
+    bottom: 8px;
+  }
+
+  .webmind-header {
+    padding: 8px 12px;
+  }
+
+  .webmind-website-info {
+    padding: 7px 12px;
+  }
+
+  .webmind-kb-top {
+    padding-top: 6px;
+    padding-bottom: 5px;
+  }
+
+  .webmind-kb-selector {
+    padding-bottom: 6px;
+  }
+
+  .webmind-kb-page-toolbar {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .webmind-kb-page-list {
+    max-height: 85px;
+  }
+
+  .webmind-kb-sources {
+    max-height: 95px;
+  }
+
+  .webmind-footer {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   37. Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .webmind-typing-dots span,
+  .webmind-kb-thinking svg {
+    animation: none;
+  }
+
+  .webmind-chatbot *,
+  .webmind-chatbot *::before,
+  .webmind-chatbot *::after {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+  }
+
+}
+
+
+/* ==========================================
+   Module 12 - Chat Modes
+   ========================================== */
+
+.webmind-mode-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 8px 10px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.webmind-mode-tabs button {
+  flex: 1;
+  padding: 8px 5px;
+  border: none;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.webmind-mode-tabs button.active {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* ==========================================
+   Module 12 - PDF Panel
+   ========================================== */
+
+.webmind-pdf-panel {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+}
+
+.webmind-pdf-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 13px;
+  flex-shrink: 0;
+}
+
+.webmind-pdf-toolbar strong,
+.webmind-pdf-toolbar button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.webmind-pdf-toolbar button {
+  padding: 7px 11px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+}
+
+.webmind-pdf-controls {
+  display: flex;
+  gap: 7px;
+  padding: 0 12px 9px;
+  flex-shrink: 0;
+}
+
+.webmind-pdf-controls select {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+}
+
+.webmind-pdf-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+}
+
+.webmind-pdf-meta {
+  padding: 7px 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.webmind-pdf-messages {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+}
+
+.webmind-pdf-message {
+  max-width: 88%;
+  padding: 10px;
+  border-radius: 10px;
+  background: white;
+  color: #334155;
+  overflow-wrap: anywhere;
+  flex-shrink: 0;
+}
+
+.webmind-pdf-message strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+
+.webmind-pdf-message > div {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 12px;
+}
+
+.webmind-pdf-user {
+  align-self: flex-end;
+  background: #2563eb;
+  color: white;
+}
+
+.webmind-pdf-assistant {
+  align-self: flex-start;
+  border: 1px solid #e2e8f0;
+}
+
+.webmind-pdf-empty {
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+  margin: auto 0;
+}
+
+.webmind-pdf-sources {
+  flex-shrink: 0;
+  border-top: 1px solid #e2e8f0;
+  padding: 9px 12px;
+  font-size: 11px;
+}
+
+.webmind-pdf-sources summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.webmind-pdf-source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.webmind-pdf-source-list > div {
+  padding: 7px;
+  background: #f8fafc;
+  border-radius: 7px;
+}
+
+.webmind-pdf-source-list p {
+  color: #64748b;
+  margin: 3px 0 0;
+}
+
+.webmind-pdf-composer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 10px;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.webmind-pdf-composer textarea {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  padding: 10px;
+  background: #f8fafc;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.webmind-pdf-composer button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: white;
+}
+
+.webmind-pdf-error {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 11px;
+}
+
+
+/* ==========================================
+   Module 13 - Clickable Citations
+   ========================================== */
+
+.webmind-citation-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.webmind-citation-button {
+  display: inline;
+  vertical-align: baseline;
+
+  margin: 0 2px;
+  padding: 1px 4px;
+
+  border: none;
+  border-radius: 4px;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+
+  font-size: inherit;
+  font-weight: 700;
+  line-height: inherit;
+
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.webmind-citation-button:hover {
+  background: #bfdbfe;
+  color: #1e40af;
+  text-decoration: underline;
+}
+
+.webmind-citation-button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* User messages with blue backgrounds */
+
+.webmind-message.user
+.webmind-citation-button,
+
+.webmind-kb-user
+.webmind-citation-button,
+
+.webmind-pdf-user
+.webmind-citation-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* PDF message formatting */
+
+.webmind-pdf-message-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Source references */
+
+.webmind-kb-inline-sources {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-top: 8px;
+
+  color: #64748b;
+  font-size: 10px;
+}
+
+/* Reduced motion support */
+
+@media (prefers-reduced-motion: reduce) {
+  .webmind-citation-button {
+    transition: none;
+  }
+}
